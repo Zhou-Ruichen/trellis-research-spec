@@ -2,6 +2,13 @@
 
 Use simple, readable Python that is easy to inspect during research.
 
+## Language
+
+- Code, identifiers, docstrings, comments, filenames, and commit messages are
+  written in English.
+- The language of prose documents (notes, reports, notebook text) is a
+  per-project choice: declare it in this project's spec and stay consistent.
+
 ## Project Style
 
 - Put reusable code under `src/<pkg>/`.

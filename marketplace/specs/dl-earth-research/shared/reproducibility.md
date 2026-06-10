@@ -50,6 +50,33 @@ data/manifests/<product>.json
 Use real values when available. Do not invent commit hashes, metrics, seeds, or
 environment versions.
 
+## Environment
+
+Each project declares one environment strategy in its own spec or README
+(for example: per-project locked env, or a named shared env on a GPU server).
+This template does not pick the manager; it requires the contract:
+
+- Every run manifest records the environment it ran in, plus a freeze
+  snapshot written next to the run artifacts:
+
+```json
+"environment": {
+  "manager": "<uv|conda|venv|...>",
+  "name": "<env-name>",
+  "python": "<version>",
+  "torch": "<version>",
+  "cuda": "<version-or-null>",
+  "freeze": "outputs/<run_id>/requirements.freeze.txt"
+}
+```
+
+- Shared environments drift; the freeze snapshot is what preserves the run.
+- Do not install packages ad hoc into `base` or another project's environment.
+  Add new dependencies to this project's dependency file first, then install.
+
+> Fill in after init: this project's environment strategy, env name(s), and
+> Python version.
+
 ## Seed Rule
 
 Use one project helper for seed setup. It should cover:
