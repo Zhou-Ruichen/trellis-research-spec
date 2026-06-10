@@ -2,6 +2,7 @@
 
 This spec is for research repositories that process geoscience data and train
 deep-learning models for inversion, prediction, reconstruction, or analysis.
+Use it when deep-learning training or evaluation is a primary workflow.
 
 It is intentionally opinionated for new work. Existing messy repositories can
 adopt it gradually, but agents should not preserve messy historical layouts as
@@ -12,6 +13,20 @@ included because they are the expected main stack, while the reproducibility,
 anti-bloat, data, and run-manifest contracts apply to mixed-language project
 code as well. Add project-local language rules for durable CUDA/C++, Fortran,
 Julia, Rust, or shell code when needed.
+
+## Template Fit
+
+Use `dl-earth-research` for:
+
+- geoscience repositories with deep-learning model training, checkpoints, or
+  ablations;
+- projects that need PyTorch-oriented training and evaluation conventions;
+- workflows where geospatial data handling and retained run artifacts are both
+  central.
+
+Use `research-core` instead when the project is non-DL research, statistical
+analysis, simulation, traditional ML, or a data-processing pipeline without
+deep-learning training as the main workflow.
 
 ## Documentation Files
 
@@ -25,6 +40,7 @@ Julia, Rust, or shell code when needed.
 | [data/index.md](./data/index.md) | Reading, writing, processing, or validating data |
 | [training/index.md](./training/index.md) | Training, checkpoints, configs, or model code |
 | [evaluation/index.md](./evaluation/index.md) | Metrics, figures, predictions, or reports |
+| [guides/index.md](./guides/index.md) | Choosing a task guide |
 | [guides/add-experiment.md](./guides/add-experiment.md) | Adding a new experiment |
 | [guides/debug-nan-oom.md](./guides/debug-nan-oom.md) | Debugging NaN, inf, divergence, or OOM |
 | [guides/code-review.md](./guides/code-review.md) | Reviewing research-code changes |
@@ -34,7 +50,7 @@ Julia, Rust, or shell code when needed.
 Make new research code easy to run, inspect, compare, and reproduce without
 turning exploratory work into over-engineered product code.
 
-## Required Shape For New Projects
+## Recommended Shape For New Research Projects
 
 ```text
 project/

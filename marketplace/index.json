@@ -17,6 +17,23 @@
         "swot",
         "reproducibility"
       ]
+    },
+    {
+      "id": "research-core",
+      "type": "spec",
+      "name": "Research Core",
+      "description": "Language-agnostic Trellis specs for reproducible non-DL research, simulations, traditional ML, data processing, evaluation, and anti-bloat conventions.",
+      "path": "marketplace/specs/research-core",
+      "tags": [
+        "research",
+        "reproducibility",
+        "data",
+        "evaluation",
+        "simulation",
+        "traditional-ml",
+        "mixed-language",
+        "anti-bloat"
+      ]
     }
   ]
 }

@@ -71,6 +71,45 @@ def validate_markdown_links() -> None:
 
 def validate_required_content() -> None:
     required = {
+        "marketplace/specs/research-core/README.md": [
+            "Research Core",
+            "Template Fit",
+            "dl-earth-research",
+        ],
+        "marketplace/specs/research-core/shared/project-layout.md": [
+            "data/raw/",
+            "data/interim/",
+            "data/processed/",
+            "outputs/<run_id>/",
+            "existing documented layout",
+        ],
+        "marketplace/specs/research-core/shared/anti-bloat.md": [
+            "Delete superseded code",
+            "Repo-wide sweeps",
+            "experiment record",
+            "*_v2",
+            "*_final",
+        ],
+        "marketplace/specs/research-core/shared/reproducibility.md": [
+            "manifest.json",
+            "metrics.json",
+            "Do not invent",
+            "Scratch",
+            "Retained",
+            '"retention"',
+            '"manager"',
+            '"freeze"',
+        ],
+        "marketplace/specs/research-core/data/index.md": [
+            "Manifest Rule",
+            "Boundary Validation",
+            "leakage",
+        ],
+        "marketplace/specs/research-core/evaluation/index.md": [
+            "Retained evaluation runs",
+            "Comparison",
+            "reports",
+        ],
         "marketplace/specs/dl-earth-research/shared/project-layout.md": [
             "data/raw/",
             "data/interim/",
@@ -98,6 +137,11 @@ def validate_required_content() -> None:
             "SWOT",
             "Data Lake Rule",
             "Manifest Rule",
+        ],
+        "marketplace/specs/dl-earth-research/evaluation/index.md": [
+            "Retained evaluation runs",
+            "Scratch and smoke evaluation runs",
+            "Retained prediction products",
         ],
         "marketplace/specs/dl-earth-research/training/index.md": [
             "PyTorch",
@@ -153,7 +197,36 @@ def validate_trellis_spec_shape() -> None:
         print("WARN: trellis not found; skipped install-shape validation", file=sys.stderr)
         return
 
-    template_path = ROOT / "marketplace/specs/dl-earth-research"
+    expected_by_template = {
+        "dl-earth-research": [
+            "README.md",
+            "shared/index.md",
+            "shared/project-layout.md",
+            "shared/anti-bloat.md",
+            "shared/reproducibility.md",
+            "shared/python-style.md",
+            "data/index.md",
+            "training/index.md",
+            "evaluation/index.md",
+            "guides/index.md",
+            "guides/add-experiment.md",
+            "guides/debug-nan-oom.md",
+            "guides/code-review.md",
+        ],
+        "research-core": [
+            "README.md",
+            "shared/index.md",
+            "shared/project-layout.md",
+            "shared/anti-bloat.md",
+            "shared/reproducibility.md",
+            "data/index.md",
+            "evaluation/index.md",
+            "guides/index.md",
+            "guides/add-run.md",
+            "guides/code-review.md",
+        ],
+    }
+
     with tempfile.TemporaryDirectory(prefix="trellis-research-spec-") as tmp:
         tmp_path = Path(tmp)
         subprocess.run(
@@ -170,28 +243,22 @@ def validate_trellis_spec_shape() -> None:
             stdout=subprocess.DEVNULL,
             stderr=subprocess.DEVNULL,
         )
-        spec_path = tmp_path / ".trellis/spec"
-        if spec_path.exists():
-            shutil.rmtree(spec_path)
-        shutil.copytree(template_path, spec_path)
+        for template in load_index()["templates"]:
+            template_id = template["id"]
+            if template_id not in expected_by_template:
+                fail(f"missing spec-shape expectations for template {template_id!r}")
+            template_path = ROOT / template["path"]
+            spec_path = tmp_path / ".trellis/spec"
+            if spec_path.exists():
+                shutil.rmtree(spec_path)
+            shutil.copytree(template_path, spec_path)
 
-        expected = [
-            "README.md",
-            "shared/index.md",
-            "shared/project-layout.md",
-            "shared/anti-bloat.md",
-            "shared/reproducibility.md",
-            "shared/python-style.md",
-            "data/index.md",
-            "training/index.md",
-            "evaluation/index.md",
-            "guides/add-experiment.md",
-            "guides/debug-nan-oom.md",
-            "guides/code-review.md",
-        ]
-        for rel_path in expected:
-            if not (spec_path / rel_path).is_file():
-                fail(f"Trellis spec-shape validation missing .trellis/spec/{rel_path}")
+            for rel_path in expected_by_template[template_id]:
+                if not (spec_path / rel_path).is_file():
+                    fail(
+                        f"Trellis spec-shape validation missing "
+                        f"{template_id}/.trellis/spec/{rel_path}"
+                    )
 
 
 def main() -> None:

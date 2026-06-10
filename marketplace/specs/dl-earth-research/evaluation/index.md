@@ -21,7 +21,7 @@ logic live under `src/<pkg>/eval/`.
 
 ## Metrics
 
-Every evaluation run writes:
+Retained evaluation runs write:
 
 ```text
 outputs/<run_id>/metrics.json
@@ -44,18 +44,23 @@ Recommended schema:
 }
 ```
 
-Do not report metrics only in stdout, screenshots, notebooks, or remote logging
-dashboards.
+Scratch and smoke evaluation runs may write lighter logs or metrics while
+debugging. Promote the run and write the retained metrics file before citing it
+in a comparison, report, or result claim.
+
+Do not report retained metrics only in stdout, screenshots, notebooks, or
+remote logging dashboards.
 
 ## Figures
 
-Use:
+For retained generated figures tied to a run, use:
 
 ```text
 outputs/<run_id>/figures/
 ```
 
-for generated figures tied to a run.
+Scratch figures may live under `outputs/scratch/<run_id>/figures/` and may be
+deleted unless promoted.
 
 Use:
 
@@ -68,13 +73,13 @@ human-facing reports.
 
 ## Prediction Products
 
-Write model predictions under:
+For retained runs, write model predictions under:
 
 ```text
 outputs/<run_id>/predictions/
 ```
 
-Prediction products must record:
+Retained prediction products must record:
 
 - checkpoint path;
 - input data manifest;
@@ -103,9 +108,8 @@ scripts/evaluate_old_checkpoint.py
 
 ## Quality Check
 
-- [ ] Metrics are written to JSON with split and sample count.
-- [ ] Figures and predictions are tied to a run ID.
+- [ ] Retained metrics are written to JSON with split and sample count.
+- [ ] Retained figures and predictions are tied to a run ID.
 - [ ] Geospatial outputs record coordinate convention, grid definition, and postprocessing.
 - [ ] Reports contain curated artifacts, not raw output dumps.
 - [ ] New evaluation behavior did not create copied script variants.
-

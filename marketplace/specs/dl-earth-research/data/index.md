@@ -13,7 +13,9 @@ rule is "data must have lifecycle, provenance, and rebuild instructions."
 | [../shared/reproducibility.md](../shared/reproducibility.md) | Writing manifests and run records |
 | [../shared/anti-bloat.md](../shared/anti-bloat.md) | Adding processing scripts or variants |
 
-## Data Layout
+## General Data Rules
+
+### Data Layout
 
 ```text
 data/
@@ -29,7 +31,7 @@ for read-only external data roots or symlink targets. Use `data/interim/` for
 temporary but rebuildable products. Use `data/processed/` for model-ready
 datasets.
 
-## Data Lake Rule
+### Data Lake Rule
 
 If a project reads from a shared data lake such as `/mnt/data2/00-Data`, treat
 that location as read-only by default.
@@ -38,7 +40,7 @@ Project code should write to local `data/interim/`, `data/processed/`, or
 `outputs/<run_id>/`. Writing back into a shared data lake requires an explicit
 data-processing task and a manifest.
 
-## Manifest Rule
+### Manifest Rule
 
 Every durable data product needs a manifest in `data/manifests/`.
 
@@ -64,7 +66,7 @@ Required fields:
 Do not invent unavailable fields. Use `null`, an empty list, or a clear
 assumption only when the value is truly unknown.
 
-## Boundary Validation
+### Boundary Validation
 
 Validate at the point where data enters the project:
 
@@ -77,7 +79,9 @@ Validate at the point where data enters the project:
 - NaN and fill-value handling is explicit;
 - train/validation/test splits cannot leak the same track, tile, region, or time range when leakage matters.
 
-## SWOT And Geoscience Data Rules
+## Geoscience Data Rules
+
+### SWOT And Related Data
 
 For SWOT, altimetry, gravity, and bathymetry workflows:
 
@@ -115,4 +119,3 @@ If the stage changes, update config and manifest, not the script name.
 - [ ] Data paths are config-driven, not hardcoded workstation paths.
 - [ ] NaN/fill values, units, and coordinate conventions are explicit.
 - [ ] Large generated data is ignored by git unless the user explicitly chooses to version a small fixture.
-
