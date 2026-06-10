@@ -78,7 +78,9 @@ def validate_required_content() -> None:
             "outputs/<run_id>/",
         ],
         "marketplace/specs/dl-earth-research/shared/anti-bloat.md": [
-            "Do not delete old experiments",
+            "Delete superseded code",
+            "Repo-wide sweeps",
+            "experiment record",
             "*_v2.py",
             "*_final.py",
         ],
@@ -86,6 +88,11 @@ def validate_required_content() -> None:
             "manifest.json",
             "metrics.json",
             "Do not invent",
+            "Scratch",
+            "Retained",
+            '"retention"',
+            '"manager"',
+            '"freeze"',
         ],
         "marketplace/specs/dl-earth-research/data/index.md": [
             "SWOT",
@@ -105,21 +112,39 @@ def validate_required_content() -> None:
                 fail(f"{rel_path} missing required text: {needle}")
 
 
+def iter_repo_files() -> list[Path]:
+    try:
+        result = subprocess.run(
+            ["git", "ls-files", "--cached", "--others", "--exclude-standard"],
+            cwd=ROOT,
+            check=True,
+            text=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+        )
+    except (subprocess.CalledProcessError, FileNotFoundError):
+        return [
+            path.relative_to(ROOT)
+            for path in ROOT.rglob("*")
+            if path.is_file() and ".git" not in path.parts
+        ]
+    return [Path(line) for line in result.stdout.splitlines() if line]
+
+
 def validate_no_non_ascii() -> None:
-    for path in ROOT.rglob("*"):
-        if ".git" in path.parts:
+    for rel_path in iter_repo_files():
+        path = ROOT / rel_path
+        if not path.is_file():
             continue
-        rel_path = path.relative_to(ROOT)
         try:
             str(rel_path).encode("ascii")
         except UnicodeEncodeError:
             fail(f"path must be ASCII: {rel_path}")
-        if path.is_file():
-            data = path.read_bytes()
-            try:
-                data.decode("ascii")
-            except UnicodeDecodeError:
-                fail(f"file content must be ASCII: {rel_path}")
+        data = path.read_bytes()
+        try:
+            data.decode("ascii")
+        except UnicodeDecodeError:
+            fail(f"file content must be ASCII: {rel_path}")
 
 
 def validate_trellis_spec_shape() -> None:

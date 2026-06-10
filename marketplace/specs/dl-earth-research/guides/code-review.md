@@ -12,7 +12,8 @@ Use this checklist before considering a change complete.
 ## Reproducibility
 
 - [ ] Config is the source of truth.
-- [ ] Run outputs include config snapshot, manifest, seed, environment, and metrics.
+- [ ] Retained run outputs include config snapshot, manifest, seed,
+      environment freeze, and metrics.
 - [ ] Any result claim is backed by an actual file.
 - [ ] Data products have manifests and rebuild instructions.
 
@@ -22,11 +23,12 @@ Use this checklist before considering a change complete.
 - [ ] No `*_v2.py`, `*_final.py`, or backup source directories.
 - [ ] New reusable logic is in `src/<pkg>/`.
 - [ ] One-off exploration stayed in `notebooks/` or a thin script.
-- [ ] Any cleanup candidate was reported, not deleted without permission.
+- [ ] Superseded variants were deleted, not left to accumulate; every deletion
+      is listed, and no experiment record (`outputs/`, manifests, configs
+      referenced by results) was removed without asking.
 
 ## Verification
 
 - [ ] Ran the narrowest meaningful command.
 - [ ] If no command was run, the reason is stated.
 - [ ] Test scope matches the risk of the change.
-

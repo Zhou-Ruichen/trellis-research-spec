@@ -11,7 +11,8 @@ and leaving output conventions ambiguous. Prevent bloat by not adding it.
 - Do not create `*_v2.py`, `*_final.py`, `*_new.py`, or date-suffixed variants.
 - Do not add a factory, registry, base class, plugin system, or config class for a one-off script.
 - Do not hide unknown behavior with broad fallback branches, swallowed exceptions, or fake success logs.
-- Do not delete old experiments, baselines, ablations, or configs automatically. Report candidates and ask.
+- Delete superseded code instead of accumulating variants. Git history is the
+  archive; follow the cleanup protocol below for what needs asking first.
 
 ## Experiment Variants
 
@@ -56,20 +57,44 @@ src/<pkg>/eval/diagnostics.py
 
 ## Cleanup Protocol
 
-When you find likely dead code or duplicated old variants:
+Git history is the safety net: anything committed is recoverable, so deleting
+superseded work in the working tree is the default way to prevent bloat.
 
-1. Report the path and why it looks removable or mergeable.
-2. Explain whether it may be an experiment record, baseline, or paper artifact.
-3. Ask before deleting or collapsing it.
+Delete directly, then list every deletion in the completion report:
 
-Do not silently remove history from research repositories.
+- dead code and unused helpers;
+- superseded script or config variants (`*_v2.py`, copied experiment scripts);
+- rebuildable intermediates (`data/interim/`, `outputs/scratch/`, stale
+  smoke-run outputs);
+- debug instrumentation that served its purpose.
+
+Ask first only when deletion is irreversible or breaks the experiment record:
+
+- run artifacts under `outputs/` that back reported results;
+- `data/manifests/` entries;
+- baseline or ablation configs still referenced by reports, papers, or
+  comparison tables;
+- anything not tracked by git.
+
+Deletion stays scoped to the task:
+
+- Delete only what the current task superseded or replaced, and only after the
+  replacement is verified to work.
+- "Probably dead" is not "superseded". If nothing in this task replaced it and
+  you only suspect it is unused, report it instead of deleting it.
+- Repo-wide sweeps and whole-directory removals are a separate cleanup task:
+  propose the file list first and wait for confirmation.
+
+When unsure which side something falls on, treat it as experiment record and
+ask. Never delete silently: a deletion that does not appear in the completion
+report is a bug.
 
 ## Completion Report Requirement
 
 When a task adds code, report:
 
 - new files added;
+- files deleted and why;
 - net new lines if easily available;
 - any duplicate or bloat risk noticed;
 - why each new durable file is justified.
-

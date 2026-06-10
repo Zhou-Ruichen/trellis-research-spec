@@ -7,6 +7,12 @@ It is intentionally opinionated for new work. Existing messy repositories can
 adopt it gradually, but agents should not preserve messy historical layouts as
 precedent.
 
+The template is Python-first, not Python-only. Python/PyTorch conventions are
+included because they are the expected main stack, while the reproducibility,
+anti-bloat, data, and run-manifest contracts apply to mixed-language project
+code as well. Add project-local language rules for durable CUDA/C++, Fortran,
+Julia, Rust, or shell code when needed.
+
 ## Documentation Files
 
 | File | Read when |
@@ -46,4 +52,3 @@ project/
 
 Use this shape for new work unless the user explicitly chooses a narrower
 one-off scratch directory.
-

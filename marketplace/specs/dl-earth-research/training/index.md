@@ -17,8 +17,6 @@ checkpoints, and experiment variants.
 ```text
 configs/
   base.yaml
-  data/
-  model/
   exp/
 src/<pkg>/
   data/
@@ -28,6 +26,9 @@ scripts/
   train.py
 ```
 
+Split out `configs/data/` and `configs/model/` groups when the config tree
+grows; `configs/exp/` stays the home of experiment overrides either way.
+
 `scripts/train.py` should be a thin entrypoint:
 
 1. load config;
@@ -35,7 +36,7 @@ scripts/
 3. set seed;
 4. create datamodule/dataloaders;
 5. create model/trainer;
-6. write run manifest;
+6. write retained-run manifest when the run is kept as evidence;
 7. train.
 
 Reusable logic belongs under `src/<pkg>/`.
@@ -88,7 +89,7 @@ src/<pkg>/training/train_old.py
 
 ## Checkpoints
 
-Write checkpoints under:
+For retained runs, write checkpoints under:
 
 ```text
 outputs/<run_id>/checkpoints/
@@ -102,6 +103,8 @@ epoch=012-val_rmse=123.456.ckpt
 ```
 
 Do not store checkpoints in source directories.
+Scratch and smoke checkpoints may live under `outputs/scratch/<run_id>/` and
+may be deleted when they are no longer useful.
 
 ## Minimal Smoke Test
 
@@ -117,13 +120,17 @@ The smoke config should:
 - run one epoch or one training step;
 - avoid GPU-only assumptions;
 - verify loss is finite;
-- write a manifest and metrics file.
+- write enough log or metrics evidence to debug failures.
+
+A smoke run only needs the full manifest and environment freeze if it is
+promoted to a retained run.
 
 ## Quality Check
 
 - [ ] New experiment added a config, not a copied training script.
-- [ ] Training outputs land under `outputs/<run_id>/`.
-- [ ] Run manifest records config, seed, code state, environment, and data manifest.
+- [ ] Training outputs land under `outputs/`; retained run outputs land under
+      `outputs/<run_id>/`.
+- [ ] Retained run manifest records config, seed, code state, environment, and
+      data manifest.
 - [ ] One small smoke path exists or was updated when training behavior changed.
 - [ ] Model code remains reusable and testable under `src/<pkg>/`.
-

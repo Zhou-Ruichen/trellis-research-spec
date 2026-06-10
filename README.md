@@ -11,12 +11,39 @@ The first template, `dl-earth-research`, targets:
 - deep-learning training and evaluation;
 - SWOT, altimetry, gravity, bathymetry, and related geoscience data workflows;
 - reproducible experiment management;
-- anti-bloat rules for research code where baselines and ablations must not be
-  deleted automatically.
+- anti-bloat rules for research code: superseded variants are deleted (git
+  history is the archive), while run artifacts and experiment records are
+  protected.
+
+## Scope
+
+- Python-first, not Python-only. The layout and style bindings
+  (`src/<pkg>/`, `pyproject.toml`, `python-style.md`) target Python/PyTorch,
+  which is the expected main language. The core contracts -- anti-bloat,
+  reproducibility, run manifests, data manifests, environment recording -- are
+  language-agnostic and apply to any code in the repo.
+- Mixed-language work (CUDA/C++ extensions, Fortran kernels, Julia or Rust
+  tooling, shell scripts) follows the same contracts; add a per-language style
+  file in the project's own spec when that language carries durable code.
+- Designed for new projects. Existing projects with a customized spec should
+  follow the adoption section below instead of `--overwrite`.
+- Covers code structure, experiment management, data handling, and anti-bloat.
+  CI/CD, deployment, and monitoring are intentionally out of scope; add them as
+  separate spec layers if a project needs them.
 
 ## Use
 
-After this repository is pushed to GitHub:
+Use the tagged registry for repeatable installs:
+
+```sh
+trellis init \
+  --registry gh:Zhou-Ruichen/trellis-research-spec/marketplace#v0.1.0 \
+  --template dl-earth-research \
+  --claude --codex
+```
+
+Use the unpinned `main` registry only when you intentionally want the latest
+template changes:
 
 ```sh
 trellis init \
@@ -30,7 +57,7 @@ or incorrect spec:
 
 ```sh
 trellis init \
-  --registry gh:Zhou-Ruichen/trellis-research-spec/marketplace \
+  --registry gh:Zhou-Ruichen/trellis-research-spec/marketplace#v0.1.0 \
   --template dl-earth-research \
   --overwrite \
   --claude --codex
@@ -77,7 +104,7 @@ tmpdir="$(mktemp -d)"
 cd "$tmpdir"
 git init
 trellis init \
-  --registry gh:Zhou-Ruichen/trellis-research-spec/marketplace \
+  --registry gh:Zhou-Ruichen/trellis-research-spec/marketplace#v0.1.0 \
   --template dl-earth-research \
   --claude --codex -y
 find .trellis/spec -type f | sort
@@ -89,11 +116,14 @@ find .trellis/spec -type f | sort
 - `configs/` as the single source of truth for experiment knobs.
 - `data/` is allowed, but it must be organized by lifecycle and tracked with
   manifests.
-- `outputs/<run_id>/` is the source of truth for run artifacts.
+- `outputs/<run_id>/` is the source of truth for retained run artifacts;
+  scratch and smoke runs stay lightweight and disposable unless promoted.
 - No `train_v2.py`, `*_final.py`, duplicate experiment scripts, or backup
   directories as normal development patterns.
-- No automatic deletion of baselines, ablations, or old experiment configs.
-  Agents must report cleanup candidates and ask.
+- Superseded code variants are deleted by the task that replaces them rather
+  than accumulated; git history is the archive. Suspected-dead code, bulk
+  cleanup, and run artifacts (`outputs/`, `data/manifests/`, configs still
+  referenced by results) require asking first.
 
 ## Repository Layout
 
