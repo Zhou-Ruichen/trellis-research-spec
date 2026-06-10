@@ -36,6 +36,22 @@ trellis init \
   --claude --codex
 ```
 
+## Adopting Into An Existing Project
+
+`--overwrite` replaces the whole `.trellis/spec/` directory. If the project
+already has a customized spec (project-specific directory structure, data
+contracts, captured learnings), do not overwrite it. Instead:
+
+- Copy only the layout-independent guides (`shared/anti-bloat.md` and
+  `shared/reproducibility.md`) into the existing spec layer and add them to
+  its guidelines index.
+- Keep the project's own documented layout: `src/<pkg>/` in this template is
+  for new projects; an established repo's `directory-structure.md` wins.
+- Prepend a short note in the copied files mapping `src/<pkg>/` to the repo's
+  actual module layout.
+
+Reserve `--overwrite` for specs that are still untouched Trellis defaults.
+
 ## Local Validation
 
 Run:
