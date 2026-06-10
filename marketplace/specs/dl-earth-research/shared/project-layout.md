@@ -63,7 +63,7 @@ project/
 Bad:
 
 ```text
-non_ascii_data_script.py
+data_script_with_non_ascii_name.py
 train_v2.py
 train_final.py
 output/
