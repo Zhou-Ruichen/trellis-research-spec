@@ -36,6 +36,37 @@ trellis init \
   --claude --codex
 ```
 
+## Local Validation
+
+Run:
+
+```sh
+python3 scripts/validate.py
+```
+
+The validator checks:
+
+- Trellis marketplace `index.json` schema;
+- template path existence;
+- markdown links inside the spec;
+- core research requirements;
+- ASCII-only paths and contents;
+- local `.trellis/spec` installation shape when the `trellis` CLI is installed.
+
+The validator cannot prove remote registry installation until this repository is
+published. After publishing, verify with:
+
+```sh
+tmpdir="$(mktemp -d)"
+cd "$tmpdir"
+git init
+trellis init \
+  --registry gh:Zhou-Ruichen/trellis-research-spec/marketplace \
+  --template dl-earth-research \
+  --claude --codex -y
+find .trellis/spec -type f | sort
+```
+
 ## What The Template Enforces
 
 - Modern Python layout with importable code under `src/<pkg>/`.
@@ -66,4 +97,3 @@ examples/
 
 The marketplace schema follows Trellis `index.json` requirements: a `templates`
 array with entries containing string `id`, `type`, `name`, and `path` fields.
-

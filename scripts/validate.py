@@ -5,7 +5,10 @@ from __future__ import annotations
 
 import json
 import re
+import shutil
+import subprocess
 import sys
+import tempfile
 from pathlib import Path
 
 
@@ -102,13 +105,78 @@ def validate_required_content() -> None:
                 fail(f"{rel_path} missing required text: {needle}")
 
 
+def validate_no_non_ascii() -> None:
+    for path in ROOT.rglob("*"):
+        if ".git" in path.parts:
+            continue
+        rel_path = path.relative_to(ROOT)
+        try:
+            str(rel_path).encode("ascii")
+        except UnicodeEncodeError:
+            fail(f"path must be ASCII: {rel_path}")
+        if path.is_file():
+            data = path.read_bytes()
+            try:
+                data.decode("ascii")
+            except UnicodeDecodeError:
+                fail(f"file content must be ASCII: {rel_path}")
+
+
+def validate_trellis_spec_shape() -> None:
+    trellis = shutil.which("trellis")
+    if trellis is None:
+        print("WARN: trellis not found; skipped install-shape validation", file=sys.stderr)
+        return
+
+    template_path = ROOT / "marketplace/specs/dl-earth-research"
+    with tempfile.TemporaryDirectory(prefix="trellis-research-spec-") as tmp:
+        tmp_path = Path(tmp)
+        subprocess.run(
+            ["git", "init"],
+            cwd=tmp_path,
+            check=True,
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+        )
+        subprocess.run(
+            [trellis, "init", "--claude", "--codex", "-y"],
+            cwd=tmp_path,
+            check=True,
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+        )
+        spec_path = tmp_path / ".trellis/spec"
+        if spec_path.exists():
+            shutil.rmtree(spec_path)
+        shutil.copytree(template_path, spec_path)
+
+        expected = [
+            "README.md",
+            "shared/index.md",
+            "shared/project-layout.md",
+            "shared/anti-bloat.md",
+            "shared/reproducibility.md",
+            "shared/python-style.md",
+            "data/index.md",
+            "training/index.md",
+            "evaluation/index.md",
+            "guides/add-experiment.md",
+            "guides/debug-nan-oom.md",
+            "guides/code-review.md",
+        ]
+        for rel_path in expected:
+            if not (spec_path / rel_path).is_file():
+                fail(f"Trellis spec-shape validation missing .trellis/spec/{rel_path}")
+
+
 def main() -> None:
     validate_index()
     validate_markdown_links()
     validate_required_content()
+    validate_no_non_ascii()
+    validate_trellis_spec_shape()
     print("trellis-research-spec validation passed")
 
 
 if __name__ == "__main__":
     main()
-
