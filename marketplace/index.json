@@ -1,0 +1,22 @@
+{
+  "version": 1,
+  "templates": [
+    {
+      "id": "dl-earth-research",
+      "type": "spec",
+      "name": "Deep Learning Earth Research",
+      "description": "Trellis specs for reproducible deep-learning research with data processing, training, evaluation, and anti-bloat conventions.",
+      "path": "marketplace/specs/dl-earth-research",
+      "tags": [
+        "python",
+        "deep-learning",
+        "pytorch",
+        "research",
+        "geoscience",
+        "swot",
+        "reproducibility"
+      ]
+    }
+  ]
+}
+

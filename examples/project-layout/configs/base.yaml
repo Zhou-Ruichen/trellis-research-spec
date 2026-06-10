@@ -1,0 +1,12 @@
+# Example only. Real projects should keep every training knob here or in
+# configs/exp/*.yaml overrides.
+seed: 42
+data:
+  manifest: data/manifests/example.json
+training:
+  max_epochs: 1
+  batch_size: 2
+optimizer:
+  name: adamw
+  lr: 0.0003
+

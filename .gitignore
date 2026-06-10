@@ -1,0 +1,10 @@
+.DS_Store
+*.pyc
+__pycache__/
+.venv/
+.mypy_cache/
+.pytest_cache/
+
+# Local validation scratch space.
+.tmp/
+
